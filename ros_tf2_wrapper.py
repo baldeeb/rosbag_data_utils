@@ -5,7 +5,7 @@ from rospy import Duration
 from typing import List, Optional
 from rosbag_as_dataset import RosbagReader
 from ros_to_numpy_helpers import ros_transform_to_np_se3_matrix
-import logging
+import yaml
 
 class Tf2Wrapper:
     def __init__(self, 
@@ -50,6 +50,9 @@ class Tf2Wrapper:
     
     def __str__(self):
         return self._buffer.all_frames_as_yaml()
+    
+    def get_as_dict(self):
+        return yaml.safe_load(self._buffer.all_frames_as_yaml())
 
 
 def get_populated_tf2_wrapper(bag_path:str, 
@@ -72,21 +75,3 @@ def get_populated_tf2_wrapper(bag_path:str,
     add_topics(dynamic_topics, False)
 
     return wrapper
-
-def add_odometry_to_tf2wrapper(bag_path:str, odom_topic:str, tf2_wrapper:Tf2Wrapper):
-    raise NotImplementedError('Though the function is implemented, after close '+
-                              'inspection, it is evident that this message type '+
-                              'is expressed in the /tf topics and is republished '+
-                              'for the purpose of navigation.')
-    def Odometry_to_TransformStampled(msg):
-        tfmsg = TransformStamped()
-        tfmsg.header = msg.header
-        tfmsg.child_frame_id = msg.child_frame_id
-        tfmsg.transform.translation = msg.pose.pose.position
-        tfmsg.transform.rotation = msg.pose.pose.orientation
-        print(tfmsg)
-        return tfmsg
-    dataset = RosbagReader(bag_path, {odom_topic: 't'})
-    dataset.register_topic_postprocess(odom_topic, Odometry_to_TransformStampled)
-    for d in dataset:
-        tf2_wrapper.set(d['t'], static=False)

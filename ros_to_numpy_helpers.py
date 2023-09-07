@@ -76,3 +76,12 @@ def se3_mat_to_position_and_quaterion_vec(mat):
     q = from_rotation_matrix(mat[:3,:3])
     vec[3:] = np.array([q.x, q.y, q.z, q.w]) 
     return vec
+
+def ros_joint_states_to_numpy(msg):
+    return {
+        'names': msg.name,
+        'positions': np.array(msg.position),
+        'velocities': np.array(msg.velocity),
+        'efforts': np.array(msg.effort),
+    }
+

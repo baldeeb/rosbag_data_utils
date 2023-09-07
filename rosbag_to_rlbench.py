@@ -21,7 +21,7 @@ from rlbench.backend.observation import Observation
 from rlbench.demo import Demo
 
 from depth_image_encoding import FloatArrayToRgbImage, DEFAULT_RGB_SCALE_FACTOR
-from rospy import Time
+from rospy import Time, Duration
 from tf2_ros import tf2
 
 ALL_CAMERAS = [
@@ -142,7 +142,7 @@ def save_keypoint(episodes:List[Dict],
         base_misc[cam + '_camera_near'] = 0 # 0.5                           # TODO: scrutinize these values
         base_misc[cam + '_camera_far'] = 1 #4.5                            # TODO: scrutinize these values
 
-    base_misc['keypoint_idxs'] = [len(episodes) - 1]
+    base_misc['keypoint_idxs'] = [sum([1 for e in episodes if 'keypoint' in e]) - 1]
 
     observations = []
     image_keys = [f'{cam}_rgb' for cam in cameras_used]
@@ -162,7 +162,8 @@ def save_keypoint(episodes:List[Dict],
                 save_img(v, image_dir)
                 found_image = True
         assert found_image, f"Could not find image in episode {eps_idx}."
-        misc['keypoint'] = eps['keypoint']
+        if 'keypoint' in eps:
+            misc['keypoint'] = eps['keypoint']
         observations.append(episode_to_rlbench_obs(eps, misc))
 
     demo = Demo(observations, random_seed=0)
@@ -211,7 +212,8 @@ def _setup_rosbag_dataset(data_dir,
 
 def add_tfs_to_episodes(tf_wrapper:Tf2Wrapper, data:List[Dict], 
                     names_and_frames:Dict, ref_frame:str,
-                    handle_excepts:bool=False,
+                    try_handle_extrapolation:bool=True,
+                    offset_t:Duration=Duration(0,0),
                     ):
     '''Adds the extrinsics to the data. Optionally ignores missing data.
     Args:
@@ -222,27 +224,40 @@ def add_tfs_to_episodes(tf_wrapper:Tf2Wrapper, data:List[Dict],
         ref_frame: The frame of reference for all the extrinsics.
     '''
     skipped = []
-    for i, d in enumerate(data):
+    for data_i, d in enumerate(data):
         try:
-            for n, f in names_and_frames.items():
-                if n not in d.keys(): 
-                    # skipped.add(n)
-                    time = list(d.values())[0]['time']
-                    T = tf_wrapper.get(ref_frame, f, Time(secs=time.secs, nsecs=time.nsecs))
-                    d[n] = T
+            for name, frame in names_and_frames.items():
+                if name not in d.keys(): 
+                    d_time = [val['time'] for val in d.values() 
+                              if isinstance(val, dict) and 'time' in val][0]
+                    time = Time(secs=d_time.secs + offset_t.secs, 
+                                nsecs=d_time.nsecs + offset_t.nsecs)
+                    d[name] = tf_wrapper.get(ref_frame, frame, time)
                 else:
-                    time = d[n]['time']
-                    T = tf_wrapper.get(ref_frame, f, Time(secs=time.secs, nsecs=time.nsecs))
-                    d[n]['extrinsics'] = T
+                    d_time = d[name]['time']
+                    time = Time(secs=d_time.secs + offset_t.secs, 
+                                nsecs=d_time.nsecs + offset_t.nsecs)
+                    d[name]['extrinsics'] = tf_wrapper.get(ref_frame, frame, time)
         except tf2.ExtrapolationException as e:
-            if not handle_excepts:
+            if try_handle_extrapolation:
+                if data_i == 0 and offset_t == Duration(0,0):
+                    tf_dict = tf_wrapper.get_as_dict()
+                    earliest = max([tf_dict[f]['oldest_transform'] 
+                                    for f in [frame, ref_frame]])
+                    return add_tfs_to_episodes(tf_wrapper, data, names_and_frames, ref_frame, 
+                                               try_handle_extrapolation, 
+                                               offset_t=Time.from_sec(earliest) - time + Duration(0.001,0))
+                elif data_i > int(0.8 * len(data)):
+                    skipped.append(data_i)
+                    logging.warning(f"Skipped {data_i} frame due to mismatched timestamps between tfs and data.")
+                else:
+                    logging.error(f'Failed to handle extrapolation exception at data index: {data_i}.')
+                    raise e
+            else: 
                 raise e
-            else:
-                logging.warning(f'In add_tfs_to_episodes: {e}')
-                skipped.append(i)
         
-    if len(skipped) > 0:
-        logging.warning(f"Skipped {len(skipped)} frames between {skipped[0]} to {skipped[-1]} due to missing tfs.")
+    if len(skipped) > 0: logging.warning(f"Skipped frames {skipped}.")
+    
     return skipped
 
 
@@ -263,8 +278,13 @@ def keypoints_from_frame(data:List[Dict], tf_wrapper:Tf2Wrapper, ref_frame:str):
 
 
 
-
-
+###################################################################
+###################################################################
+###################################################################
+###################################################################
+# TODO: remove below functions
+###################################################################
+###################################################################
 
 
 def rosbag_to_rlbench(data_dir:pl.Path, 

@@ -1,35 +1,34 @@
+data_dir: /media/baldeeb/ssd2/Data/RosBags/
+
 task_folders:
-  - 'dataset_name1'
-  - 'dataset_name2'
+  - 'sweep_demo'
 task_descriptions: 
-  - 'move to the right of the chair'
+  - 'sweep dust into pan'
 
 topics_and_names:
-  '/camera1/color/image_raw':                   'left_shoulder_rgb'
-  '/camera1/aligned_depth_to_color/image_raw':  'left_shoulder_depth'
-  '/camera1/color/camera_info':                 'left_shoulder_camera_intrinsics'
-  '/camera2/color/image_raw':                   'right_shoulder_rgb'
-  '/camera2/aligned_depth_to_color/image_raw':  'right_shoulder_depth'
-  '/camera2/color/camera_info':                 'right_shoulder_camera_intrinsics'
-  '/spot/task_state':                           'keypoint'
-reference_topic: '/spot/task_state'   # Topics around which all other topics will be sampled
-topic_time_slack: 0.1                 # max allowed delay between messages 
+  '/camera/color/image_raw':           'overhead_rgb'
+  '/camera/depth/image_rect_raw':      'overhead_depth'
+  '/camera/color/camera_info':         'overhead_camera_intrinsics'
+  '/joint_states':                     'joint_states'
+  '/right/Robotiq2FGripperRobotInput': 'gripper_input'
 
-reference_frame: 'map'                # Frame relative to which cameras will be saved
+reference_topic: '/camera/color/image_raw' # Topics around which all other topics will be sampled
+topic_time_slack: 0.03                 # max allowed delay between messages 
+
+reference_frame: 'base'                # Frame relative to which cameras will be saved
 reference_frame_T:                    # Transform applied to the target frame
-    [[ -1.0,  0.0,  0.0,  0.0],
-     [  0.0,  1.0,  0.0,  0.0],
-     [  0.0,  0.0, -1.0,  0.0],
-     [  0.0,  0.0,  0.0,  1.0]]
+    [[ -1.0,  0.0,  0.0,   0.0],
+     [  0.0,  1.0,  0.0,   0.0],
+     [  0.0,  0.0, -1.0,  -1.0],
+     [  0.0,  0.0,  0.0,   1.0]]
 names_and_frames:
-    'left_shoulder_rgb':    'camera1_color_optical_frame'
-    'right_shoulder_rgb':   'camera2_color_optical_frame'
+    'overhead_rgb':    'base' ################################################ TODO
+    'end_effector':    'tool0_controller'
 
 cameras_used : 
-  - 'left_shoulder'
-  - 'right_shoulder'
+  - 'overhead'
 
-depth_scale: 2097151  # Spot ( 2**21 ) - 1.0 
+depth_scale: 16777215  # Spot ( 2**21 ) - 1.0 
                       # Originally ( 2**24 ) - 1.0 
 
-save_path: '/media/baldeeb/ssd2/Data/RLBench/'
+save_path: '/media/baldeeb/ssd2/Data/RLBench/peract/'

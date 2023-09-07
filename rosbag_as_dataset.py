@@ -3,7 +3,8 @@ import rosbag
 from ros_to_numpy_helpers import (
     ros_camera_info_to_np_intrinsic,
     ros_image_to_np,
-    ros_pose_to_np_se3_matrix
+    ros_pose_to_np_se3_matrix,
+    ros_joint_states_to_numpy,
 )
 import logging
 
@@ -64,6 +65,7 @@ class RosbagReader:
                 'sensor_msgs/Image': ros_image_to_np,
                 'geometry_msgs/PoseWithCovarianceStamped': ros_pose_to_np_se3_matrix,
                 'sensor_msgs/CameraInfo': ros_camera_info_to_np_intrinsic,
+                'sensor_msgs/JointState': ros_joint_states_to_numpy,
             }
 
         logging.info(f'Initialized BagReader - ref topic: {reference_topic} - time slack {slack_sec}.')
@@ -207,7 +209,7 @@ class RosbagReader:
                                             topics=missing)
             else:
                 raise MissingTopicError(f'Not all topics were found at time {time}.', 
-                                        topics=list(self._name_of_topic.values()))
+                                        topics=[k for k in data if k not in self._topics])
         return data
 
     def __del__(self):
