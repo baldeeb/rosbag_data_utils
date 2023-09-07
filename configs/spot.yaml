@@ -1,0 +1,31 @@
+task_folders:
+  - 'dataset_name1'
+  - 'dataset_name2'
+task_descriptions: 
+  - 'move to the right of the chair'
+
+topics_and_names:
+  '/camera1/color/image_raw':                   'overhead_rgb'
+  '/camera1/aligned_depth_to_color/image_raw':  'overhead_depth'
+  '/camera1/color/camera_info':                 'overhead_camera_intrinsics'
+  '': 'girpper stuff' ##################################################### TODO
+
+reference_topic: '/camera1/color/image_raw' # Topics around which all other topics will be sampled
+topic_time_slack: 0.03                 # max allowed delay between messages 
+
+reference_frame: 'base'                # Frame relative to which cameras will be saved
+reference_frame_T:                    # Transform applied to the target frame
+    [[ -1.0,  0.0,  0.0,   0.0],
+     [  0.0,  1.0,  0.0,   0.0],
+     [  0.0,  0.0, -1.0,  -1.0],
+     [  0.0,  0.0,  0.0,   1.0]]
+names_and_frames:
+    'overhead_rgb':    '' ################################################ TODO
+
+cameras_used : 
+  - 'overhead'
+
+depth_scale: 2097151  # Spot ( 2**21 ) - 1.0 
+                      # Originally ( 2**24 ) - 1.0 
+
+save_path: '/media/baldeeb/ssd2/Data/RLBench/'
