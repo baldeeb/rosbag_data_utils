@@ -1,0 +1,35 @@
+task_folders:
+  - 'dataset_name1'
+  - 'dataset_name2'
+task_descriptions: 
+  - 'move to the right of the chair'
+
+topics_and_names:
+  '/camera1/color/image_raw':                   'left_shoulder_rgb'
+  '/camera1/aligned_depth_to_color/image_raw':  'left_shoulder_depth'
+  '/camera1/color/camera_info':                 'left_shoulder_camera_intrinsics'
+  '/camera2/color/image_raw':                   'right_shoulder_rgb'
+  '/camera2/aligned_depth_to_color/image_raw':  'right_shoulder_depth'
+  '/camera2/color/camera_info':                 'right_shoulder_camera_intrinsics'
+  '/spot/task_state':                           'keypoint'
+reference_topic: '/spot/task_state'   # Topics around which all other topics will be sampled
+topic_time_slack: 0.1                 # max allowed delay between messages 
+
+reference_frame: 'map'                # Frame relative to which cameras will be saved
+reference_frame_T:                    # Transform applied to the target frame
+    [[ -1.0,  0.0,  0.0,  0.0],
+     [  0.0,  1.0,  0.0,  0.0],
+     [  0.0,  0.0, -1.0,  0.0],
+     [  0.0,  0.0,  0.0,  1.0]]
+names_and_frames:
+    'left_shoulder_rgb':    'camera1_color_optical_frame'
+    'right_shoulder_rgb':   'camera2_color_optical_frame'
+
+cameras_used : 
+  - 'left_shoulder'
+  - 'right_shoulder'
+
+depth_scale: 2097151  # Spot ( 2**21 ) - 1.0 
+                      # Originally ( 2**24 ) - 1.0 
+
+save_path: '/media/baldeeb/ssd2/Data/RLBench/'
