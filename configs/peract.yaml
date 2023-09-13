@@ -1,34 +1,40 @@
 data_dir: /media/baldeeb/ssd2/Data/RosBags/
 
 task_folders:
-  - 'sweep_demo'
+  - 'test'
+  # - 'sweep_demo'
 task_descriptions: 
   - 'sweep dust into pan'
 
 topics_and_names:
-  '/camera/color/image_raw':           'overhead_rgb'
-  '/camera/depth/image_rect_raw':      'overhead_depth'
-  '/camera/color/camera_info':         'overhead_camera_intrinsics'
-  '/joint_states':                     'joint_states'
-  '/right/Robotiq2FGripperRobotInput': 'gripper_input'
+  '/camera/color/image_raw':                    'overhead_rgb'
+  '/camera/aligned_depth_to_color/image_raw':   'overhead_depth'
+  '/camera/color/camera_info':                  'overhead_camera_intrinsics'
+  '/joint_states':                              'joint_states'
+  '/right/Robotiq2FGripperRobotInput':          'gripper_input'
 
 reference_topic: '/camera/color/image_raw' # Topics around which all other topics will be sampled
 topic_time_slack: 0.03                 # max allowed delay between messages 
 
 reference_frame: 'base'                # Frame relative to which cameras will be saved
 reference_frame_T:                    # Transform applied to the target frame
-    [[ -1.0,  0.0,  0.0,   0.0],
+    [[  1.0,  0.0,  0.0,   0.0],
      [  0.0,  1.0,  0.0,   0.0],
-     [  0.0,  0.0, -1.0,  -1.0],
+     [  0.0,  0.0,  1.0,   0.0],
      [  0.0,  0.0,  0.0,   1.0]]
+
 names_and_frames:
-    'overhead_rgb':    'base' ################################################ TODO
+    'overhead_rgb':    'base'
+    'overhead_depth':    'base'
     'end_effector':    'tool0_controller'
 
 cameras_used : 
   - 'overhead'
 
-depth_scale: 16777215  # Spot ( 2**21 ) - 1.0 
-                      # Originally ( 2**24 ) - 1.0 
+depth_scale: 16777215 # Originally ( 2**24 ) - 1.0 
+near_far_planes: [0.5, 1.5]
+
+# depth_scale: 2097151  # Spot ( 2**21 ) - 1.0 
+# near_far_planes: [0.0, 1.0]
 
 save_path: '/media/baldeeb/ssd2/Data/RLBench/peract/'

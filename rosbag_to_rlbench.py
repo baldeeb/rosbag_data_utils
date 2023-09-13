@@ -110,11 +110,12 @@ def get_dummy_observation(frame, misc):
 
 def save_keypoint(episodes:List[Dict], 
                   save_path:str, 
-                  description:List[str],
+                  description:str,
                   episode_idx:int=0, 
                   depth_scale=DEFAULT_RGB_SCALE_FACTOR,
                   cameras_used=ALL_CAMERAS,
-                  episode_to_rlbench_obs=get_dummy_observation
+                  episode_to_rlbench_obs=get_dummy_observation,
+                  near_far_planes = [0, 1]
                   ):
     '''TODO: add docstring'''
 
@@ -139,8 +140,8 @@ def save_keypoint(episodes:List[Dict],
 
         K_key = f'{cam}_camera_intrinsics'
         base_misc[K_key] = np.array(episodes[0][K_key]).reshape(3,3)
-        base_misc[cam + '_camera_near'] = 0 # 0.5                           # TODO: scrutinize these values
-        base_misc[cam + '_camera_far'] = 1 #4.5                            # TODO: scrutinize these values
+        base_misc[cam + '_camera_near'] = near_far_planes[0]                           # TODO: scrutinize these values
+        base_misc[cam + '_camera_far'] = near_far_planes[1]                            # TODO: scrutinize these values
 
     base_misc['keypoint_idxs'] = [sum([1 for e in episodes if 'keypoint' in e]) - 1]
 
@@ -158,7 +159,8 @@ def save_keypoint(episodes:List[Dict],
                 misc[f'{key[:-4]}_camera_extrinsics'] = val['extrinsics']
                 found_image = True
             elif key in depth_keys: 
-                v = FloatArrayToRgbImage(val['image'], scale_factor=depth_scale)
+                depth_img = (val['image'] - near_far_planes[0]) / (near_far_planes[1] - near_far_planes[0])
+                v = FloatArrayToRgbImage(depth_img, scale_factor=depth_scale)
                 save_img(v, image_dir)
                 found_image = True
         assert found_image, f"Could not find image in episode {eps_idx}."
@@ -179,7 +181,7 @@ def save_keypoint(episodes:List[Dict],
 
     descriptions_path = os.path.join(episode_path, 'variation_descriptions.pkl')
     with open(descriptions_path, 'wb') as f:
-        pickle.dump(description, f)
+        pickle.dump([description], f)
 
     logging.info(f"Saved {len(episodes)} frames to {save_path}")
 

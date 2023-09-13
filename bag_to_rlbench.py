@@ -95,7 +95,8 @@ for task_folder, description in zip(cfg.task_folders, cfg.task_descriptions):
                       demo_idx, 
                       depth_scale=cfg.depth_scale,
                       cameras_used=cfg.cameras_used,
-                      episode_to_rlbench_obs=get_rlbench_obs)
+                      episode_to_rlbench_obs=get_rlbench_obs,
+                      near_far_planes=cfg.near_far_planes,)
         logging.info('.'*3 + f'Completed demo {demo_idx}' + '.'*3)
     logging.info('Done with task ')
 
