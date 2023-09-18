@@ -1,2 +1,2 @@
-rlbench
+rlbench @ git+https://github.com/stepjam/RLBench.git@master
 numpy-quaternion

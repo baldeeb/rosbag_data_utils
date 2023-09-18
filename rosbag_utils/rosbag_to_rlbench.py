@@ -10,17 +10,17 @@ import pickle
 import numpy as np
 from PIL import Image
 
-from rosbag_as_dataset import RosbagReader, MissingTopicError
-from ros_to_numpy_helpers import (ros_pose_to_np_se3_matrix,
+from rosbag_utils.rosbag_as_dataset import RosbagReader, MissingTopicError
+from rosbag_utils.ros_to_numpy_helpers import (ros_pose_to_np_se3_matrix,
                                                      ros_image_to_np,
                                                      se3_mat_to_position_and_quaterion_vec)
-from ros_tf2_wrapper import (get_populated_tf2_wrapper,
+from rosbag_utils.ros_tf2_wrapper import (get_populated_tf2_wrapper,
                                                 Tf2Wrapper)
 
 from rlbench.backend.observation import Observation
 from rlbench.demo import Demo
 
-from depth_image_encoding import FloatArrayToRgbImage, DEFAULT_RGB_SCALE_FACTOR
+from rosbag_utils.depth_image_encoding import FloatArrayToRgbImage, DEFAULT_RGB_SCALE_FACTOR
 from rospy import Time, Duration
 from tf2_ros import tf2
 

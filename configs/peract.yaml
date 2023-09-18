@@ -1,8 +1,7 @@
 data_dir: /media/baldeeb/ssd2/Data/RosBags/
 
 task_folders:
-  - 'test'
-  # - 'sweep_demo'
+  - 'sweep_demo'
 task_descriptions: 
   - 'sweep dust into pan'
 

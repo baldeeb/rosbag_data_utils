@@ -1,6 +1,6 @@
 import rospy
 import rosbag
-from ros_to_numpy_helpers import (
+from rosbag_utils.ros_to_numpy_helpers import (
     ros_camera_info_to_np_intrinsic,
     ros_image_to_np,
     ros_pose_to_np_se3_matrix,

@@ -3,8 +3,8 @@ from std_msgs.msg import Time
 from tf2_ros import Buffer, TransformException
 from rospy import Duration
 from typing import List, Optional
-from rosbag_as_dataset import RosbagReader
-from ros_to_numpy_helpers import ros_transform_to_np_se3_matrix
+from rosbag_utils.rosbag_as_dataset import RosbagReader
+from rosbag_utils.ros_to_numpy_helpers import ros_transform_to_np_se3_matrix
 import yaml
 
 class Tf2Wrapper:
