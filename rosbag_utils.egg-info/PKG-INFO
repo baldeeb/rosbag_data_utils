@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: rosbag-utils
+Version: 0.1
+Summary: Utilities for translating rosbags to numpy arrays
+Author: Bahaa Aldeeb
+Author-email: aldeeb.bahaa@gmail.com
+Requires: rlbench
+Requires: numpy
+Requires: rospy
+Requires: rosbag
+Requires: tf2_ros
+Requires: geometry_msgs
+Requires: sensor_msgs
+Requires: std_msgs
+Requires: rospkg
+Requires: pycryptodomex
+Requires: gnupg
+Requires: pyyaml

@@ -1,2 +1,10 @@
 rlbench @ git+https://github.com/stepjam/RLBench.git@master
+numpy
 numpy-quaternion
+rospy
+rosbag
+tf2_ros
+rospkg
+pycryptodomex
+gnupg
+pyyaml

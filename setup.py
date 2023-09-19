@@ -8,6 +8,8 @@ setup(name='rosbag_utils',
         author='Bahaa Aldeeb',
         author_email='aldeeb.bahaa@gmail.com',
         packages=['rosbag_utils'],
-        requires=['rlbench', 'numpy', 'rospy', 'rosbag', 'tf2_ros', 'geometry_msgs', 'sensor_msgs', 'std_msgs', 'yaml']
+        requires=['rlbench', 'numpy', 'rospy', 'rosbag', 'tf2_ros', 
+                  'geometry_msgs', 'sensor_msgs', 'std_msgs', 
+                  'rospkg', 'pycryptodomex', 'gnupg', 'pyyaml',]
 )
 
